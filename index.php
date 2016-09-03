@@ -6,7 +6,6 @@ class Member
 	public $name;
 	public $age;
 	public $email;
-	public $created_at; 
 
 	const DSN = 'mysql:host=localhost;dbname=homework7_class;charset=utf8;';
 	const USER = 'root';
@@ -18,13 +17,19 @@ class Member
 		$this->name = $member['name'];
 		$this->age = $member['age'];
 		$this->email = $member['email'];
-		$this->created_at = date("Y-m-d H:i:s"); 
+	}
+
+	public $dbh;
+
+	public function Member()
+	{
+		$this->dbh = new PDO(self::DSN, self::USER, self::PASSWORD);
 	}
 
 	public function insert()
 	{
 		try {
-			$dbh = new PDO(self::DSN, self::USER, self::PASSWORD);
+			$dbh = $this->dbh;
 				// echo '成功しました！';
 		} 
 		catch (PDOException $e) {
@@ -38,27 +43,21 @@ class Member
 		$name = $this->name;
 		$age = $this->age; 
 		$email = $this->email;
-		$created_at = $this->created_at; 
+		$created_at = date("Y-m-d H:i:s"); 
 
 		$stmt->bindParam(":name", $name);
 		$stmt->bindParam(":age", $age);
 		$stmt->bindParam(":email", $email);
 		$stmt->bindParam(":created_at", $created_at);
 
-		$result = $stmt->execute();
+		return  $stmt->execute();
 		// print_r($stmt->errorInfo());
-		
-		if ($result) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public function findByEmail($email)
 	{
 		try {
-			$dbh = new PDO(self::DSN, self::USER, self::PASSWORD);
+			$dbh = $this->dbh;
 				// echo '成功しました！';
 		} 
 		catch (PDOException $e) {
@@ -77,13 +76,7 @@ class Member
 	        $members = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		if ($members) {
-			return array( 
-			'id' => $members['id'], 
-			'name' => $members['name'], 
-			'age' => $members['age'], 
-			'email' => $members['email'], 
-			'created_at' => $members['created_at'], 
-			); 
+			return $members; 
 		} else {
 			return false;
 		}
@@ -92,7 +85,7 @@ class Member
 	public function delete($id)
 	{
 		try {
-			$dbh = new PDO(self::DSN, self::USER, self::PASSWORD);
+			$dbh = $this->dbh;
 				// echo '成功しました！';
 		} 
 		catch (PDOException $e) {
@@ -106,13 +99,7 @@ class Member
 
 		$stmt->bindParam(":id", $id);
 
-		$result = $stmt->execute();
-
-		if ($result) {
-			return true;
-		} else {
-			return false;
-		}
+		return  $stmt->execute();
 	}
 }
 
