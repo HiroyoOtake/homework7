@@ -23,22 +23,20 @@ class Member
 
 	public function Member()
 	{
-		$this->dbh = new PDO(self::DSN, self::USER, self::PASSWORD);
-	}
-
-	public function insert()
-	{
 		try {
-			$dbh = $this->dbh;
+			$this->dbh = new PDO(self::DSN, self::USER, self::PASSWORD);
 				// echo '成功しました！';
 		} 
 		catch (PDOException $e) {
 			echo $e->getMessage();
 			exit;
-		}
+	}
+	}
 
+	public function insert()
+	{
 		$sql = "insert into members (name, age, email, created_at) values (:name, :age, :email, now())";
-		$stmt = $dbh->prepare($sql);
+		$stmt = $this->dbh->prepare($sql);
 		
 		$name = $this->name;
 		$age = $this->age; 
@@ -54,18 +52,9 @@ class Member
 
 	public function findByEmail($email)
 	{
-		try {
-			$dbh = $this->dbh;
-				// echo '成功しました！';
-		} 
-		catch (PDOException $e) {
-			echo $e->getMessage();
-			exit;
-		}
-
 		$sql = "select * from members where email = :email";
 
-		$stmt = $dbh->prepare($sql);
+		$stmt = $this->dbh->prepare($sql);
 
 		$stmt->bindParam(":email", $email);
 
@@ -82,18 +71,9 @@ class Member
 
 	public function delete($id)
 	{
-		try {
-			$dbh = $this->dbh;
-				// echo '成功しました！';
-		} 
-		catch (PDOException $e) {
-			echo $e->getMessage();
-			exit;
-		}
-
 		$sql = "delete from members where id = :id";
 
-		$stmt = $dbh->prepare($sql);
+		$stmt = $this->dbh->prepare($sql);
 
 		$stmt->bindParam(":id", $id);
 
