@@ -37,18 +37,16 @@ class Member
 			exit;
 		}
 
-		$sql = "insert into members (name, age, email, created_at) values (:name, :age, :email, :created_at)";
+		$sql = "insert into members (name, age, email, created_at) values (:name, :age, :email, now())";
 		$stmt = $dbh->prepare($sql);
 		
 		$name = $this->name;
 		$age = $this->age; 
 		$email = $this->email;
-		$created_at = date("Y-m-d H:i:s"); 
 
 		$stmt->bindParam(":name", $name);
 		$stmt->bindParam(":age", $age);
 		$stmt->bindParam(":email", $email);
-		$stmt->bindParam(":created_at", $created_at);
 
 		return  $stmt->execute();
 		// print_r($stmt->errorInfo());
