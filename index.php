@@ -1,11 +1,10 @@
 <?php
-
-class Member
+class TableBase
 {
-	public $data;
 	public $name;
 	public $age;
 	public $email;
+	public $dbh;
 
 	const DSN = 'mysql:host=localhost;dbname=homework7_class;charset=utf8;';
 	const USER = 'root';
@@ -13,15 +12,12 @@ class Member
 	
 	public function set($member)
 	{
-		$this->data = $member;
 		$this->name = $member['name'];
 		$this->age = $member['age'];
 		$this->email = $member['email'];
 	}
 
-	public $dbh;
-
-	public function Member()
+	public function __construct()  
 	{
 		try {
 			$this->dbh = new PDO(self::DSN, self::USER, self::PASSWORD);
@@ -50,6 +46,20 @@ class Member
 		// print_r($stmt->errorInfo());
 	}
 
+	public function delete($id)
+	{
+		$sql = "delete from members where id = :id";
+
+		$stmt = $this->dbh->prepare($sql);
+
+		$stmt->bindParam(":id", $id);
+
+		return  $stmt->execute();
+	}
+}
+
+class Member extends TableBase
+{
 	public function findByEmail($email)
 	{
 		$sql = "select * from members where email = :email";
@@ -69,16 +79,29 @@ class Member
 		}
 	}
 
-	public function delete($id)
+}
+
+class ShopItem extends TableBase
+{
+	public function findByCode($code)
 	{
-		$sql = "delete from members where id = :id";
+		$sql = "select * from ishop_items where code = :code";
 
 		$stmt = $this->dbh->prepare($sql);
 
-		$stmt->bindParam(":id", $id);
+		$stmt->bindParam(":code", $code);
 
-		return  $stmt->execute();
+		$result = $stmt->execute();
+		
+	        $codes = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		if ($codes) {
+			return $codes; 
+		} else {
+			return false;
+		}
 	}
+
 }
 
 // members テーブルのデータを表します。 
@@ -117,10 +140,16 @@ echo "<br>";
 $result = $member->delete($data['id']);
 var_dump($result);
 echo "<br>";
-//
-// // ここでは false が返ってくるはずです。 
+
+// ここでは false が返ってくるはずです。 
 $data = $member->findByEmail('test@example.com'); 
 var_dump($data);
 echo "<br>";
 
+//応用要件
+$shopItem = new ShopItem(); 
+$shopItem->set($data); 
+$shopItem->insert(); 
+$shopItem->delete($id); 
+$shopItem->findByCode($code);
 ?>
