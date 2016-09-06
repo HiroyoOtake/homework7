@@ -4,17 +4,21 @@ class TableBase
 	public $name;
 	public $age;
 	public $email;
+	public $code;
+	public $price;
 	public $dbh;
 
 	const DSN = 'mysql:host=localhost;dbname=homework7_class;charset=utf8;';
 	const USER = 'root';
 	const PASSWORD = 'root';
 	
-	public function set($member)
+	public function set($data)
 	{
-		$this->name = $member['name'];
-		$this->age = $member['age'];
-		$this->email = $member['email'];
+		$this->name = $data['name'];
+		$this->age = $data['age'];
+		$this->email = $data['email'];
+		$this->code = $data['code'];
+		$this->price = $data['price'];
 	}
 
 	public function __construct()  
@@ -149,6 +153,11 @@ echo "<br>";
 //応用要件
 $shopItem = new ShopItem(); 
 $shopItem->set($data); 
+// $shopItem->set(array( 
+// 'name' => 'テスト名', 
+// 'code' => 30, 
+// 'price' => 100, 
+// ));
 $shopItem->insert(); 
 $shopItem->delete($id); 
 $shopItem->findByCode($code);
