@@ -1,12 +1,9 @@
 <?php
 class TableBase
 {
-	public $name;
-	public $age;
-	public $email;
-	public $code;
-	public $price;
+	public $data;
 	public $dbh;
+	public $tablename;
 
 	const DSN = 'mysql:host=localhost;dbname=homework7_class;charset=utf8;';
 	const USER = 'root';
@@ -14,11 +11,7 @@ class TableBase
 	
 	public function set($data)
 	{
-		$this->name = $data['name'];
-		$this->age = $data['age'];
-		$this->email = $data['email'];
-		$this->code = $data['code'];
-		$this->price = $data['price'];
+		$this->data = $data;
 	}
 
 	public function __construct()  
@@ -35,16 +28,21 @@ class TableBase
 
 	public function insert()
 	{
-		$sql = "insert into members (name, age, email, created_at) values (:name, :age, :email, now())";
-		$stmt = $this->dbh->prepare($sql);
-		
-		$name = $this->name;
-		$age = $this->age; 
-		$email = $this->email;
+		$keys = array_keys($this->data);
+		// var_dump($data);
+		$tablecolumn = implode(", ", $keys);
+		// var_dump($tablecolumn);
+		$tablevalue = implode(", :", $keys);
 
-		$stmt->bindParam(":name", $name);
-		$stmt->bindParam(":age", $age);
-		$stmt->bindParam(":email", $email);
+
+		$sql = "insert into members ($tablecolumn, created_at) values (:$tablevalue, now())";
+		$stmt = $this->dbh->prepare($sql);
+		// var_dump($sql);
+		
+		foreach($this->data as $key => $value)
+		{
+		$stmt->bindValue(":$key", $value);
+		}
 
 		return  $stmt->execute();
 		// print_r($stmt->errorInfo());
@@ -52,7 +50,7 @@ class TableBase
 
 	public function delete($id)
 	{
-		$sql = "delete from members where id = :id";
+		$sql = "delete from " . $this->tablename . " where id = :id";
 
 		$stmt = $this->dbh->prepare($sql);
 
@@ -64,6 +62,8 @@ class TableBase
 
 class Member extends TableBase
 {
+	public $tablename = 'members';
+
 	public function findByEmail($email)
 	{
 		$sql = "select * from members where email = :email";
@@ -87,6 +87,8 @@ class Member extends TableBase
 
 class ShopItem extends TableBase
 {
+	public $tablename = 'shop_items';
+
 	public function findByCode($code)
 	{
 		$sql = "select * from ishop_items where code = :code";
@@ -117,7 +119,7 @@ $member->set(array(
 'age' => 30, 
 'email' => 'test@example.com', 
 ));
-
+// var_dump($member->data);
 // $member->set() でセットしたデータを members テーブルに追加登録します。 
 // この時 created_at カラムに現在日時を自動的にセットするようにしてください。 
 // 登録が成功した場合は true 、失敗した場合は false を返します。 
@@ -152,13 +154,13 @@ echo "<br>";
 
 //応用要件
 $shopItem = new ShopItem(); 
-$shopItem->set($data); 
+// $shopItem->set($data); 
 // $shopItem->set(array( 
 // 'name' => 'テスト名', 
 // 'code' => 30, 
 // 'price' => 100, 
 // ));
-$shopItem->insert(); 
-$shopItem->delete($id); 
-$shopItem->findByCode($code);
+// $shopItem->insert(); 
+// $shopItem->delete($id); 
+// $shopItem->findByCode($code);
 ?>
