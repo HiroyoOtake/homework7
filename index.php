@@ -32,10 +32,9 @@ class TableBase
 		// var_dump($data);
 		$tablecolumn = implode(", ", $keys);
 		// var_dump($tablecolumn);
-		$tablevalue = implode(", :", $keys);
+		$tablevalue = ":" . implode(", :", $keys);
 
-
-		$sql = "insert into members ($tablecolumn, created_at) values (:$tablevalue, now())";
+		$sql = "insert into members ($tablecolumn, created_at) values ($tablevalue, now())";
 		$stmt = $this->dbh->prepare($sql);
 		// var_dump($sql);
 		
@@ -91,7 +90,7 @@ class ShopItem extends TableBase
 
 	public function findByCode($code)
 	{
-		$sql = "select * from ishop_items where code = :code";
+		$sql = "select * from shop_items where code = :code";
 
 		$stmt = $this->dbh->prepare($sql);
 
